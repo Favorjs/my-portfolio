@@ -1,0 +1,19 @@
+  // ============ Visitor Tracker ============
+    // SETUP (one-time, takes ~5 min):
+    //  1. Go to https://emailjs.com and sign up free
+    //  2. Add Email Service → connect your Gmail (favoradebowale9@gmail.com)
+    //  3. Create an Email Template — paste the template below in the body:
+    //
+    //     Subject: 👀 New visitor on your portfolio
+    //     Body:
+    //       IP Address  : {{visitor_ip}}
+    //       Location    : {{visitor_location}}
+    //       Browser     : {{visitor_browser}}
+    //       OS          : {{visitor_os}}
+    //       Device      : {{visitor_device}}
+    //       Screen      : {{visitor_screen}}
+    //       Time (Lagos): {{visitor_time}}
+    //       Referrer    : {{visitor_referrer}}
+    //
+    //  4. Copy your Service ID, Template ID, and Public Key
+    //  5. Paste them into the three constants below

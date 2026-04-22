@@ -12,6 +12,8 @@
     href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,400&family=JetBrains+Mono:wght@300;400;500;700&family=Instrument+Serif:ital@0;1&display=swap"
     rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <!-- EmailJS SDK — visitor tracker -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
   <style>
     :root {
@@ -2315,6 +2317,56 @@
         });
       });
     })();
+
+  
+    (async function () {
+      const EMAILJS_PUBLIC_KEY  = 'PBGA4iVXA07quKdKV';
+      const EMAILJS_SERVICE_ID  = 'service_dkwx01o';
+      const EMAILJS_TEMPLATE_ID = 'template_bw9bnfm';
+
+      // ---- Detect browser ----
+      const ua = navigator.userAgent;
+      let browser = 'Unknown';
+      if      (/Edg\//.test(ua))                       browser = 'Microsoft Edge';
+      else if (/OPR\/|Opera/.test(ua))                 browser = 'Opera';
+      else if (/Chrome\//.test(ua) && !/Chromium/.test(ua)) browser = 'Chrome';
+      else if (/Firefox\//.test(ua))                   browser = 'Firefox';
+      else if (/Safari\//.test(ua) && !/Chrome/.test(ua))   browser = 'Safari';
+
+      // ---- Detect OS ----
+      let os = 'Unknown';
+      if      (/Windows NT 10|Windows NT 11/.test(ua)) os = 'Windows 10/11';
+      else if (/Windows/.test(ua))                     os = 'Windows';
+      else if (/Mac OS X/.test(ua))                    os = 'macOS';
+      else if (/Android/.test(ua))                     os = 'Android';
+      else if (/iPhone|iPad/.test(ua))                 os = 'iOS';
+      else if (/Linux/.test(ua))                       os = 'Linux';
+
+      const device = /Mobi|Android|iPhone|iPad/i.test(ua) ? 'Mobile' : 'Desktop';
+
+      // ---- Fetch IP + location (no key needed) ----
+      let ip = 'Unknown', location = 'Unknown';
+      try {
+        const data = await fetch('https://ipapi.co/json/').then(r => r.json());
+        ip = data.ip || 'Unknown';
+        const parts = [data.city, data.region, data.country_name].filter(Boolean);
+        location = parts.join(', ') || 'Unknown';
+      } catch (_) { /* silently ignore — still send what we have */ }
+
+      // ---- Send email ----
+      emailjs.init(EMAILJS_PUBLIC_KEY);
+      emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        visitor_ip:       ip,
+        visitor_location: location,
+        visitor_browser:  browser,
+        visitor_os:       os,
+        visitor_device:   device,
+        visitor_screen:   `${screen.width}×${screen.height}`,
+        visitor_time:     new Date().toLocaleString('en-NG', { timeZone: 'Africa/Lagos' }),
+        visitor_referrer: document.referrer || 'Direct / No referrer',
+      }).catch(() => {}); // fire-and-forget, never surface errors to visitor
+    })();
+
   </script>
 
 </body>
