@@ -26,7 +26,8 @@
       --rust: #ff6a35;
       --line: rgba(236, 231, 217, 0.10);
       --line-strong: rgba(236, 231, 217, 0.22);
-      --px: 80px;
+      --px: clamp(100px, 10vw, 160px);
+
     }
 
     * {
@@ -170,9 +171,100 @@
       width: 100%
     }
 
-    .nav-time {
-      color: var(--ink-dim)
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
     }
+
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      cursor: none;
+      padding: 10px;
+      z-index: 1000;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .menu-toggle span {
+      display: block;
+      width: 24px;
+      height: 1px;
+      background: var(--ink);
+      transition: transform 0.3s ease, background 0.3s ease;
+    }
+
+    .menu-toggle.active span:nth-child(1) {
+      transform: translateY(3.5px) rotate(45deg);
+    }
+
+    .menu-toggle.active span:nth-child(2) {
+      transform: translateY(-3.5px) rotate(-45deg);
+    }
+
+    /* ======== MOBILE MENU OVERLAY ======== */
+    .mobile-menu {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 10, 9, 0.98);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      z-index: 90;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .mobile-menu.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .mobile-nav-links {
+      list-style: none;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      transform: translateY(20px);
+      transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .mobile-menu.active .mobile-nav-links {
+      transform: translateY(0);
+    }
+
+    .mobile-nav-links a {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(40px, 10vw, 64px);
+      font-weight: 300;
+      color: var(--ink);
+      letter-spacing: -0.03em;
+      transition: color 0.3s ease, transform 0.3s ease;
+      display: block;
+    }
+
+    .mobile-nav-links a:hover {
+      color: var(--acid);
+    }
+
+    .mobile-menu-footer {
+      position: absolute;
+      bottom: 40px;
+      width: 100%;
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: var(--ink-mute);
+      text-transform: uppercase;
+    }
+
 
     /* ======== HERO ======== */
     .hero {
@@ -1306,8 +1398,9 @@
     /* ========================================================= */
     @media (max-width: 1100px) {
       :root {
-        --px: 48px
+        --px: 64px
       }
+
 
       .hero {
         grid-template-columns: 1fr;
@@ -1366,16 +1459,27 @@
     /* ========================================================= */
     @media (max-width: 720px) {
       :root {
-        --px: 24px
+        --px: 40px
       }
+
+
 
       nav {
         padding: 14px var(--px)
       }
 
-      nav ul {
+      .nav-links {
         display: none
       }
+
+      .menu-toggle {
+        display: flex
+      }
+
+      .nav-time {
+        display: none
+      }
+
 
       nav .logo span:last-child {
         font-size: 11px
@@ -1405,8 +1509,10 @@
       }
 
       .hero-right {
-        padding: 26px
+        padding: 40px
       }
+
+
 
       .hero-stats {
         grid-template-columns: repeat(3, 1fr);
@@ -1452,7 +1558,7 @@
       }
 
       .about .card {
-        padding: 26px;
+        padding: 40px;
         font-size: 12px;
         animation: none;
         transform: none
@@ -1557,8 +1663,10 @@
     /* ========================================================= */
     @media (max-width: 400px) {
       :root {
-        --px: 18px
+        --px: 32px
       }
+
+
 
       .hero {
         padding: 100px var(--px) 70px
@@ -1625,25 +1733,50 @@
       <img src="assets/logo.svg" alt="FA Logo">
       <span>Favour Adebowale</span>
     </div>
-    <ul>
+
+    <!-- Desktop Menu -->
+    <ul class="nav-links">
       <li><a href="#work">Work</a></li>
       <li><a href="#stack">Stack</a></li>
       <li><a href="#about">About</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
-    <div class="nav-time" id="clock">LAGOS · —:—:—</div>
+
+    <div class="nav-right">
+      <div class="nav-time" id="clock">LAGOS · —:—:—</div>
+      <button class="menu-toggle" id="menu-toggle" aria-label="Toggle Menu">
+        <span></span>
+        <span></span>
+      </button>
+    </div>
   </nav>
+
+  <!-- Mobile Menu Overlay -->
+  <div class="mobile-menu" id="mobile-menu">
+    <div class="mobile-menu-inner">
+      <ul class="mobile-nav-links">
+        <li><a href="#work">Work</a></li>
+        <li><a href="#stack">Stack</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <div class="mobile-menu-footer">
+        <p>© 2026 Favour Adebowale</p>
+      </div>
+    </div>
+  </div>
+
 
   <!-- HERO -->
   <header class="hero">
     <div class="hero-left">
-      <div class="hero-meta">
+      <!-- <div class="hero-meta">
         <span>Portfolio / Vol.01 · Est. 2022</span>
         <div class="beep-btn" aria-label="Available for work">
           <span class="beep-dot" aria-hidden="true"></span>
           <span>Available for work</span>
         </div>
-      </div>
+      </div> -->
       <h1 class="hero-title">
         Favour<br>
         <span class="it">Adebo</span><span class="underline">wale<em>.</em></span><br>
@@ -1655,10 +1788,12 @@
       <div class="index-label">[ 01 ] — Introduction</div>
       <div>
         <p class="hero-bio">
-          <span class="bio-line">Backend-leaning full-stack developer building <em>quiet, dependable</em> systems for
-            startups and corporations.</span>
-          <span class="bio-line">Currently maintaining production infrastructure at Apel Asset — previously shipped APIs
-            at <em>KPMG Nigeria</em>.</span>
+          <span class="bio-line">Backend-leaning full-stack developer building <em>quiet, dependable</em>systems for
+            startups and corporations. I leverage AI in development workflows and also train models to solve real-world
+            problems.
+          </span>
+          <!-- <span class="bio-line">Currently maintaining production infrastructure at Apel Asset — previously shipped APIs
+            at <em>KPMG Nigeria</em>.</span> -->
         </p>
         <div class="hero-stats">
           <div class="hero-stat">
@@ -1736,12 +1871,12 @@
         <div>&nbsp;&nbsp;<span class="s">"Node.js"</span>, <span class="s">"PostgreSQL"</span>,</div>
         <div>&nbsp;&nbsp;<span class="s">"MongoDB"</span>, <span class="s">"AWS"</span>,</div>
         <div>&nbsp;&nbsp;<span class="s">"Next.js"</span>, <span class="s">"Prisma"</span></div>
-        <div>],</div>
-        <div><span class="k">languages</span>: [<span class="s">"English"</span>, <span
+        <div>]</div>
+        <!-- <div><span class="k">languages</span>: [<span class="s">"English"</span>, <span
             class="s">"Yor&#xf9;b&#xe1;"</span>],</div>
         <div><span class="k">motto</span>: <span class="s">"Ship it. Then make it pretty."</span></div>
+      </div> -->
       </div>
-    </div>
   </section>
 
   <!-- WORK -->
@@ -2071,9 +2206,8 @@
   </section>
 
   <footer>
-    <div>© 2026 FAVOUR ADEBOWALE · BUILT IN LAGOS</div>
-    <div class="ascii">┌─ shipped with caffeine ─┐</div>
-    <div>V.01 / NO RIGHTS RESERVED</div>
+    <div>© 2026 FAVOUR ADEBOWALE </div>
+
   </footer>
 
   <script>
@@ -2143,7 +2277,38 @@
         });
       });
     })();
+    // ============ Mobile Menu ============
+    (function () {
+      const toggle = document.getElementById('menu-toggle');
+      const menu = document.getElementById('mobile-menu');
+      const links = document.querySelectorAll('.mobile-nav-links a');
+
+      if (!toggle || !menu) return;
+
+      function toggleMenu() {
+        toggle.classList.toggle('active');
+        menu.classList.toggle('active');
+        document.body.style.overflow = menu.classList.contains('active') ? 'hidden' : '';
+      }
+
+      toggle.addEventListener('click', toggleMenu);
+
+      links.forEach(link => {
+        link.addEventListener('click', (e) => {
+          const id = link.getAttribute('href');
+          if (id.startsWith('#')) {
+            e.preventDefault();
+            toggleMenu();
+            setTimeout(() => {
+              const target = document.querySelector(id);
+              if (target) target.scrollIntoView({ behavior: 'smooth' });
+            }, 300);
+          }
+        });
+      });
+    })();
   </script>
+
 </body>
 
 </html>
